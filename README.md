@@ -1,28 +1,28 @@
 # Init as Executive Agent
 
-A minimal, instruction-only ChatGPT skill for initializing as **Helping People's Executive Agent** through its current Workspace entry point.
+A minimal, instruction-only ChatGPT skill for initializing as **Helping People's Executive Agent** through its current Workspace Agent Configuration.
 
-The skill is deliberately an **entry-point loader**, not an alternative Executive Agent policy. It does not hardcode a record ID, assume the entry point is a Policy, or enumerate its dependencies.
+The skill loads the Executive Agent's current **Agent Configuration** as its entry point. It uses the stable agent selector `executive`; role instructions, current Effective governing Policies, and applicable dependencies come from Workspace.
 
 ## How it works
 
 When asked to initialize or activate as the Executive Agent, the assistant:
 
 1. Connects to Helping People — Workspace.
-2. Locates and retrieves the Executive Agent's current authoritative entry point.
-3. Follows that entry point's instructions, including any dependencies it identifies.
-4. Defaults to making **no changes during initialization**, unless the entry point or its dependencies explicitly direct and authorize them.
+2. Calls Workspace's `get_agent_configuration` tool with `agent_id: "executive"` and `include_policy_contents: true`, using the returned authoritative configuration as the entry point.
+3. Follows the configuration's instructions and resolved current Effective governing Policies, including applicable dependencies.
+4. Defaults to making **no changes during initialization**, unless the configuration or its governing instructions explicitly direct and authorize them.
 
-The entry point—not this skill—determines the Executive Agent's current operating instructions and any further context it needs.
+The configuration and its governing instructions determine the Executive Agent's current operating instructions and any further context it needs.
 
 ## Issues that must be surfaced
 
 The assistant should explicitly flag these conditions **only if they arise**:
 
 - **Connection failures:** Workspace or required information cannot be accessed.
-- **Entry-point ambiguity:** The current authoritative entry point cannot be identified confidently.
-- **Conflicting instructions:** The entry point or dependencies give conflicting or materially unclear instructions.
-- **Read-only override:** The entry point or dependencies direct or authorize changes during initialization that would override the skill's no-change default.
+- **Configuration unavailable or incomplete:** The authoritative Executive Agent configuration or its required instructions cannot be retrieved.
+- **Conflicting instructions:** The configuration or its governing instructions give conflicting or materially unclear instructions.
+- **Read-only override:** The configuration or its governing instructions direct or authorize changes during initialization that would override the skill's no-change default.
 
 These are exception reports, **not a checklist to repeat after every successful initialization**. Unclear authority is not a reason to guess or make changes.
 
@@ -42,6 +42,6 @@ This is a **draft** with no scripts or additional dependencies bundled in the re
 
 ## Design principle
 
-**Skill → Current entry point → Its instructions and dependencies**
+**Skill → Executive Agent Configuration → Governing instructions and dependencies**
 
-Keep the skill small so that updates to the authoritative entry point do not require duplicating or synchronizing role-specific instructions in this repository.
+Keep the skill small so that updates to the authoritative configuration and governing instructions do not require duplicating or synchronizing role-specific instructions in this repository.
